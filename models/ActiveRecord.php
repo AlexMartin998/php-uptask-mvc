@@ -59,7 +59,7 @@ class ActiveRecord
     // Busca un registro por su id
     public static function find($id)
     {
-        $query = "SELECT * FROM " . static::$table  . " WHERE id = ${id}";
+        $query = "SELECT * FROM " . static::$table  . " WHERE id = $id";
         $resultado = self::consultarSQL($query);
         return array_shift($resultado);
     }
@@ -67,15 +67,15 @@ class ActiveRecord
     // Obtener Registro
     public static function get($limite)
     {
-        $query = "SELECT * FROM " . static::$table . " LIMIT ${limite}";
+        $query = "SELECT * FROM " . static::$table . " LIMIT $limite";
         $resultado = self::consultarSQL($query);
         return array_shift($resultado);
     }
 
-    // Busqueda Where con Columna 
-    public static function where($columna, $valor)
+    // Search by column (WHERE)
+    public static function where($column, $value)
     {
-        $query = "SELECT * FROM " . static::$table . " WHERE ${columna} = '${valor}'";
+        $query = "SELECT * FROM " . static::$table . " WHERE $column = '$value'";
         $resultado = self::consultarSQL($query);
         return array_shift($resultado);
     }

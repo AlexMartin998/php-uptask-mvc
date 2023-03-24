@@ -33,6 +33,18 @@ class AuthController
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       $user->synchronize($_POST);
       $alerts = $user->registrationValidations();
+
+      if (empty($alerts)) {
+        $isAlreadyRegistered = User::where('email', $user->email);
+
+        if ($isAlreadyRegistered) {
+          User::setAlert('error', 'El Usuario ya esta registrado');
+          $alerts = User::getAlerts();
+        } else {
+          // create new user
+          debugging($user);
+        }
+      }
     }
 
     // render view
