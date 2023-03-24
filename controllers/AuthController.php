@@ -41,8 +41,17 @@ class AuthController
           User::setAlert('error', 'El Usuario ya esta registrado');
           $alerts = User::getAlerts();
         } else {
-          // create new user
-          debugging($user);
+          // // create new user
+          // hash pass
+          $user->hashPassword();
+
+          // clear user active record
+          unset($user->password2);
+
+          $user->createTempToken();
+
+          $result = $user->save();
+          if ($result) header('Location: /message');
         }
       }
     }

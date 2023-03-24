@@ -35,57 +35,57 @@ class ActiveRecord
         return static::$alerts;
     }
 
-    // Registros - CRUD
-    public function guardar()
+    // Create - CRUD
+    public function save()
     {
-        $resultado = '';
+        $result = '';
         if (!is_null($this->id)) {
             // actualizar
-            $resultado = $this->actualizar();
+            $result = $this->actualizar();
         } else {
             // Creando un nuevo registro
-            $resultado = $this->crear();
+            $result = $this->crear();
         }
-        return $resultado;
+        return $result;
     }
 
     public static function all()
     {
         $query = "SELECT * FROM " . static::$table;
-        $resultado = self::consultarSQL($query);
-        return $resultado;
+        $result = self::consultarSQL($query);
+        return $result;
     }
 
     // Busca un registro por su id
     public static function find($id)
     {
         $query = "SELECT * FROM " . static::$table  . " WHERE id = $id";
-        $resultado = self::consultarSQL($query);
-        return array_shift($resultado);
+        $result = self::consultarSQL($query);
+        return array_shift($result);
     }
 
     // Obtener Registro
     public static function get($limite)
     {
         $query = "SELECT * FROM " . static::$table . " LIMIT $limite";
-        $resultado = self::consultarSQL($query);
-        return array_shift($resultado);
+        $result = self::consultarSQL($query);
+        return array_shift($result);
     }
 
     // Search by column (WHERE)
     public static function where($column, $value)
     {
         $query = "SELECT * FROM " . static::$table . " WHERE $column = '$value'";
-        $resultado = self::consultarSQL($query);
-        return array_shift($resultado);
+        $result = self::consultarSQL($query);
+        return array_shift($result);
     }
 
     // SQL para Consultas Avanzadas.
     public static function SQL($consulta)
     {
         $query = $consulta;
-        $resultado = self::consultarSQL($query);
-        return $resultado;
+        $result = self::consultarSQL($query);
+        return $result;
     }
 
     // crea un nuevo registro
@@ -102,10 +102,10 @@ class ActiveRecord
         $query .= " ') ";
 
         // Resultado de la consulta
-        $resultado = self::$db->query($query);
+        $result = self::$db->query($query);
 
         return [
-            'resultado' =>  $resultado,
+            'resultado' =>  $result,
             'id' => self::$db->insert_id
         ];
     }
@@ -128,31 +128,31 @@ class ActiveRecord
 
         // debuguear($query);
 
-        $resultado = self::$db->query($query);
-        return $resultado;
+        $result = self::$db->query($query);
+        return $result;
     }
 
     // Eliminar un registro - Toma el ID de Active Record
     public function eliminar()
     {
         $query = "DELETE FROM "  . static::$table . " WHERE id = " . self::$db->escape_string($this->id) . " LIMIT 1";
-        $resultado = self::$db->query($query);
-        return $resultado;
+        $result = self::$db->query($query);
+        return $result;
     }
 
     public static function consultarSQL($query)
     {
         // Consultar la base de datos
-        $resultado = self::$db->query($query);
+        $result = self::$db->query($query);
 
         // Iterar los resultados
         $array = [];
-        while ($registro = $resultado->fetch_assoc()) {
+        while ($registro = $result->fetch_assoc()) {
             $array[] = static::crearObjeto($registro);
         }
 
         // liberar la memoria
-        $resultado->free();
+        $result->free();
 
         // retornar los resultados
         return $array;

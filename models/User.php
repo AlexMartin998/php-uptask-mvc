@@ -16,7 +16,7 @@ class User extends ActiveRecord
     $this->password = $args['password'] ?? '';
     $this->password2 = $args['password2'] ?? '';
     $this->token = $args['token'] ?? '';
-    $this->confirmed = $args['confirmed'] ?? '';
+    $this->confirmed = $args['confirmed'] ?? 0;
   }
 
   // user registration validations
@@ -39,5 +39,18 @@ class User extends ActiveRecord
     }
 
     return self::$alerts;
+  }
+
+
+  // hash password
+  public function hashPassword()
+  {
+    $this->password = password_hash($this->password, PASSWORD_BCRYPT);
+  }
+
+  // gen temp confirm token
+  public function createTempToken()
+  {
+    $this->token = md5(uniqid());
   }
 }
