@@ -29,7 +29,7 @@ class AuthController
           $_SESSION['email'] = $user->email;
           $_SESSION['isLoggedIn'] = true;
 
-          header('Location: /proyectos');
+          header('Location: /dashboard');
         }
       }
     }
