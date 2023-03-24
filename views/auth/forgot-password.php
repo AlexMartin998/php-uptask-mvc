@@ -4,6 +4,9 @@
   <div class="container-sm">
     <p class="page-description">Recupera tu Acceso UpTask</p>
 
+  <?php include_once __DIR__ . '/../templates/alerts.php' ?>
+
+
     <form class="form" method="POST" action="/forgot-password" novalidate>
 
       <div class="field">

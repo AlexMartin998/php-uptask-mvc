@@ -71,12 +71,39 @@ class AuthController
 
   public static function forgotPassword(Router $router)
   {
+    $alerts = [];
+
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+      $user = new User($_POST);
+      $alerts = $user->validateEmail();
+
+      if (empty($alerts)) {
+        $user = User::where('email', $user->email);
+
+        if ($user && $user->confirmed) {
+          $user->createTempToken();
+          unset($user->password2);
+
+          $user->save();
+
+          // send emial
+          $email = new Email($user->email, $user->name, $user->token);
+          $email->sendRecoveryInstructions();
+
+
+          User::setAlert('success', 'Hemos enviado las instrucciones a tu email');
+        } else {
+          User::setAlert('error', 'El Usuario no existe o no esta confirmado');
+        }
+      }
     }
+
+    $alerts = User::getAlerts();
 
     // render view
     $router->render('auth/forgot-password', [
       'title' => 'Olvide mi password',
+      'alerts' => $alerts,
     ]);
   }
 
