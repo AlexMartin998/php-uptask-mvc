@@ -2,6 +2,7 @@
 
 namespace Controllers;
 
+use Classes\Email;
 use Model\User;
 use MVC\Router;
 
@@ -51,6 +52,12 @@ class AuthController
           $user->createTempToken();
 
           $result = $user->save();
+
+          // send email
+          $email = new Email($user->email, $user->name, $user->token);
+          $email->sendConfirmationEmail();
+
+
           if ($result) header('Location: /message');
         }
       }
