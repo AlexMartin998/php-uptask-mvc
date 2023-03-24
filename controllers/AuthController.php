@@ -109,12 +109,42 @@ class AuthController
 
   public static function resetPassword(Router $router)
   {
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $alerts = [];
+    $hasError = false;
+    $token = s($_GET['token']);
+    if (!$token) header('Location: /');
+
+    $user = User::where('token', $token);
+    if (empty($user)) {
+      User::setAlert('error', 'Token Invalido!');
+      $hasError = true;
     }
+
+
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+      $user->synchronize($_POST);
+      $alerts = $user->validatePassword();
+
+      if (empty($alerts)) {
+        $user->hashPassword();
+        unset($user->password2);
+
+        $user->token = null;
+
+        $result = $user->save();
+
+        if ($result) header('Location: /');
+      }
+    }
+
+
+    $alerts = User::getAlerts();
 
     // render view
     $router->render('auth/reset-password', [
       'title' => 'Reestablecer Password',
+      'alerts' => $alerts,
+      'hasError' => $hasError,
     ]);
   }
 
