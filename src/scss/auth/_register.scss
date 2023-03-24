@@ -1,21 +1,21 @@
 @use 'base/variables' as v;
 @use 'base/mixins' as m;
 
-.login {
+.register {
   margin-top: 5rem;
 
   .uptask {
-    @include m.gradientText(v.$cyan);
+    @include m.gradientText(v.$purple);
   }
 
   input[type='submit'] {
-    @include m.button(v.$cyan, v.$white);
+    @include m.button(v.$purple, v.$white);
     margin-top: 3rem;
   }
 
   .actions {
     a {
-      color: v.$cyan;
+      color: v.$purple;
     }
   }
 }
