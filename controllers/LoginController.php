@@ -55,9 +55,12 @@ class LoginController
     ]);
   }
 
-  public static function message()
+  public static function message(Router $router)
   {
-    echo "from message";
+    // render view
+    $router->render('auth/message', [
+      'title' => 'Instrucciones para confirmar tu cuenta',
+    ]);
   }
 
   public static function confirmAccount()
