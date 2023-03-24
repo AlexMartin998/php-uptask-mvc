@@ -4,7 +4,7 @@
   <div class="container-sm">
     <p class="page-description">Crea tu cuenta en UpTask</p>
 
-    <form class="form" method="POST" action="/" novalidate>
+    <form class="form" method="POST" action="/register" novalidate>
       <div class="field">
         <label for="name">Nombre</label>
         <input type="name" name="name" id="name" placeholder="Nombre">

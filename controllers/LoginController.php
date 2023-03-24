@@ -33,12 +33,15 @@ class LoginController
     ]);
   }
 
-  public static function forgotPassword()
+  public static function forgotPassword(Router $router)
   {
-    echo "from forgotPassword";
-
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
+
+    // render view
+    $router->render('auth/forgot-password', [
+      'title' => 'Olvide mi password',
+    ]);
   }
 
   public static function resetPassword()
