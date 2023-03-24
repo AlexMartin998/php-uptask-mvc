@@ -45,7 +45,9 @@ class AuthController
 
   public static function logout()
   {
-    echo "from logout";
+    session_start();
+    $_SESSION = [];
+    header('Location: /');
   }
 
   public static function register(Router $router)

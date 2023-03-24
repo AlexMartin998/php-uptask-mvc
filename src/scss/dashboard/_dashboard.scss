@@ -11,5 +11,14 @@
 
   .principal {
     flex: 1;
+
+    .content {
+      padding: 3rem;
+
+      .page-title {
+        font-size: 2.8rem;
+        text-align: center;
+      }
+    }
   }
 }

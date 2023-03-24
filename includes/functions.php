@@ -9,17 +9,17 @@ function debugging($variable): string
     exit;
 }
 
-// Escapa / Sanitizar el HTML
+// Escape / Sanitize HTML
 function s($html): string
 {
     $s = htmlspecialchars($html);
     return $s;
 }
 
-// Función que revisa que el usuario este autenticado
+// check authentication status
 function isAuth(): void
 {
-    if (!isset($_SESSION['login'])) {
+    if (!isset($_SESSION['isLoggedIn'])) {
         header('Location: /');
     }
 }
