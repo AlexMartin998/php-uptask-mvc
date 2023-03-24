@@ -10,12 +10,36 @@ class AuthController
 {
   public static function login(Router $router)
   {
+    $alerts = [];
+
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+      $user = new User($_POST);
+      $alerts = $user->checkLogin();
+
+      if (empty($alerts)) {
+        $user = User::where('email', $user->email);
+
+        if (!$user || !$user->confirmed || !password_verify($_POST['password'], $user->password)) {
+          User::setAlert('error', 'Se ha producido un problema al iniciar sesión. Comprueba tu correo electrónico y contraseña y verifica tu cuenta, o crea una cuenta.');
+        } else {
+          // login
+          session_start();
+          $_SESSION['id'] = $user->id;
+          $_SESSION['name'] = $user->name;
+          $_SESSION['email'] = $user->email;
+          $_SESSION['isLoggedIn'] = true;
+
+          header('Location: /proyectos');
+        }
+      }
     }
+
+    $alerts = User::getAlerts();
 
     // render view
     $router->render('auth/login', [
       'title' => 'Iniciar Sesión',
+      'alerts' => $alerts,
     ]);
   }
 

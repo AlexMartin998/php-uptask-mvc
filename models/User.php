@@ -19,6 +19,22 @@ class User extends ActiveRecord
     $this->confirmed = $args['confirmed'] ?? 0;
   }
 
+  // checkLogin
+  public function checkLogin()
+  {
+    if (!$this->email) {
+      self::$alerts['error'][] = 'El Email del Usuario es Obligatorio';
+    }
+    if (strlen($this->password) < 6) {
+      self::$alerts['error'][] = 'El password debe contener al menos 6 caracteres';
+    }
+    if (!$this->password) {
+      self::$alerts['error'][] = 'El Password no puede ir vacio';
+    }
+
+    return self::$alerts;
+  }
+
   // user registration validations
   public function registrationValidations()
   {
@@ -69,7 +85,8 @@ class User extends ActiveRecord
   }
 
   // validate password
-  public function validatePassword() {
+  public function validatePassword()
+  {
     if (!$this->password) {
       self::$alerts['error'][] = 'El Password no puede ir vacio';
     }

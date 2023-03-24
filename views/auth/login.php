@@ -1,8 +1,11 @@
 <div class="container login">
-  <?php include_once __DIR__ . '/../templates/site-name.php' ?>
+  <?php include_once __DIR__ . '/../templates/site-name.php'; ?>
 
   <div class="container-sm">
     <p class="page-description">Iniciar Sesión</p>
+
+    <?php include_once __DIR__ . '/../templates/alerts.php'; ?>
+
 
     <form class="form" method="POST" action="/" novalidate>
       <div class="field">
