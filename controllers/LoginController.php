@@ -59,12 +59,15 @@ class LoginController
   {
     // render view
     $router->render('auth/message', [
-      'title' => 'Instrucciones para confirmar tu cuenta',
+      'title' => 'Cuenta Creada Exitosamente',
     ]);
   }
 
-  public static function confirmAccount()
+  public static function confirmAccount(Router $router)
   {
-    echo "from confirmAccount";
+    // render view
+    $router->render('auth/confirm-account', [
+      'title' => 'Confirma tu cuenta UpTask',
+    ]);
   }
 }

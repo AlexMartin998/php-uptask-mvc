@@ -1,5 +1,6 @@
-@forward 'login';
-@forward 'register';
+@forward 'confirm-account';
 @forward 'forgot-password';
-@forward 'reset-password';
+@forward 'login';
 @forward 'message';
+@forward 'register';
+@forward 'reset-password';
