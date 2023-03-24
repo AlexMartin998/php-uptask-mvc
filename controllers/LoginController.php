@@ -44,12 +44,15 @@ class LoginController
     ]);
   }
 
-  public static function resetPassword()
+  public static function resetPassword(Router $router)
   {
-    echo "from resetPassword";
-
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
+
+    // render view
+    $router->render('auth/reset-password', [
+      'title' => 'Reestablecer Password',
+    ]);
   }
 
   public static function message()
