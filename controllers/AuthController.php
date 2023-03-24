@@ -2,12 +2,15 @@
 
 namespace Controllers;
 
+use Model\User;
 use MVC\Router;
 
-class LoginController
+class AuthController
 {
   public static function login(Router $router)
   {
+    $user = new User;
+
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
@@ -24,12 +27,19 @@ class LoginController
 
   public static function register(Router $router)
   {
+    $alerts = [];
+    $user = new User;
+
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+      $user->synchronize($_POST);
+      $alerts = $user->registrationValidations();
     }
 
     // render view
     $router->render('auth/register', [
       'title' => 'Crea tu cuenta en UpTask',
+      'user' => $user,
+      'alerts' => $alerts,
     ]);
   }
 
