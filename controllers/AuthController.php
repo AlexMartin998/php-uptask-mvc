@@ -10,8 +10,6 @@ class AuthController
 {
   public static function login(Router $router)
   {
-    $user = new User;
-
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
@@ -103,9 +101,30 @@ class AuthController
 
   public static function confirmAccount(Router $router)
   {
+    $token = s($_GET['token']);
+    if (!$token) header('Location: /');
+
+    $user = User::where('token', $token);
+    if (empty($user)) {
+      User::setAlert('error', 'Invalid token!');
+    } else {
+      // confirm account
+      $user->confirmed = 1;
+      $user->token = null;
+      unset($user->password2);
+
+      $user->save();
+
+      User::setAlert('success', 'Cuenta comporbada correctamente');
+    }
+
+    $alerts = User::getAlerts();
+
+
     // render view
     $router->render('auth/confirm-account', [
       'title' => 'Confirma tu cuenta UpTask',
+      'alerts' => $alerts
     ]);
   }
 }
