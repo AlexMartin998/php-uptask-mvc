@@ -3,7 +3,7 @@
 <div class="container-sm">
   <?php include_once __DIR__ . '/../templates/alerts.php' ?>
 
-  <form class="form">
+  <form class="form" method="POST" action="/crear-proyecto">
     <?php include_once __DIR__ . '/../dashboard/project-form.php' ?>
 
     <input type="submit" value="Crear Proyecto">

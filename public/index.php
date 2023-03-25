@@ -35,8 +35,14 @@ $router->get('/confirm-account', [AuthController::class, 'confirm_account']);
 
 // // Private - Projects
 $router->get('/dashboard', [DashboardController::class, 'index']);
+
 $router->get('/crear-proyecto', [DashboardController::class, 'create_project']);
+$router->post('/crear-proyecto', [DashboardController::class, 'create_project']);
+
+$router->get('/proyecto', [DashboardController::class, 'project']);
+
 $router->get('/perfil', [DashboardController::class, 'profile']);
+
 
 
 

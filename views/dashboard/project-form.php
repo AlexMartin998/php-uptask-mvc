@@ -1,5 +1,5 @@
 <div class="field">
-  <label for="project">Nombre Proyecto</label>
-  <input type="text" name="project" id="project" placeholder="Nombre del Proyecto">
+  <label for="title">Nombre Proyecto</label>
+  <input type="text" name="title" id="title" placeholder="Nombre del Proyecto">
 
 </div>
