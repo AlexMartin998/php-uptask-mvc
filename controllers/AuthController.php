@@ -95,7 +95,7 @@ class AuthController
     ]);
   }
 
-  public static function forgotPassword(Router $router)
+  public static function forgot_password(Router $router)
   {
     $alerts = [];
 
@@ -133,7 +133,7 @@ class AuthController
     ]);
   }
 
-  public static function resetPassword(Router $router)
+  public static function reset_password(Router $router)
   {
     $alerts = [];
     $hasError = false;
@@ -182,7 +182,7 @@ class AuthController
     ]);
   }
 
-  public static function confirmAccount(Router $router)
+  public static function confirm_account(Router $router)
   {
     $token = s($_GET['token']);
     if (!$token) header('Location: /');
