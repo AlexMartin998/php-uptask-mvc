@@ -6,7 +6,8 @@
   font-weight: 900;
   margin-bottom: 1rem;
   font-size: 1.2rem;
-  min-width: 80rem;
+  // min-width: 50rem;
+  min-width: 100%;
 
   &.error {
     background-color: lighten(v.$red, 60%);
