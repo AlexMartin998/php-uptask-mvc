@@ -26,7 +26,6 @@ class DashboardController
     
 
 
-
     $router->render('dashboard/create-project', [
       'title' => 'Crear Proyecto',
       'alerts' => $alerts,
