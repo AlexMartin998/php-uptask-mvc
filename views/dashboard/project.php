@@ -6,9 +6,14 @@
       &#43; Nueva Tarea
     </button>
   </div>
+
+  <ul id="task-list" class="task-list">
+
+  </ul>
 </div>
 
 <?php include_once __DIR__ . '/../dashboard/footer-dashboard.php' ?>
+
 
 
 <?php

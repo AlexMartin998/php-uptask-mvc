@@ -13,6 +13,15 @@ class TaskController
   {
     session_start();
     isAuth();
+    $projectUrl = $_GET['id'];
+    if (!$projectUrl) header('Location: /dashboard');
+
+    $project = Project::where('url', $projectUrl);
+    if (!$project || $project->owner_id !== $_SESSION['id']) header('Location: /dashboard');
+
+    $tasks = Task::belongsTo('project_id', $project->id);
+
+    echo json_encode($tasks);
   }
 
   public static function create_task()
