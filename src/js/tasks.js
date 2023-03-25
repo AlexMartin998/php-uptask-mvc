@@ -192,14 +192,17 @@
   const getTaskByID = id => {
     return tasksStore.find(task => task.id === id);
   };
+  const createFormData = obj => {
+    const formData = new FormData();
+    Object.keys(obj).forEach(key => formData.append(key, obj[key].trim()));
+
+    return formData;
+  };
 
   const updateTaskStatus = async taskId => {
     const updatedTask = getTaskByID(taskId);
     updatedTask.status = updatedTask.status === '1' ? '0' : '1';
-    const body = new FormData();
-    Object.keys(updatedTask).forEach(key =>
-      body.append(key, updatedTask[key].trim())
-    );
+    const body = createFormData(updatedTask);
 
     try {
       const url = 'http://localhost:3000/api/task/update';
@@ -210,11 +213,7 @@
 
       const data = await resp.json();
       if (data.ok) {
-        showAlert(
-          data.message,
-          data.type,
-          document.querySelector('.new-task-container')
-        );
+        Swal.fire('Estado actualizado!', data.message, data.type);
 
         tasksStore = tasksStore.map(task =>
           task.id === taskId ? updatedTask : task
@@ -228,17 +227,34 @@
   };
 
   const deleteTask = async taskId => {
-    let proceed;
-    Swal.fire({
+    const { isConfirmed } = await Swal.fire({
       title: '¿Eliminar Tarea?',
       showCancelButton: true,
       confirmButtonText: 'Si',
       cancelButtonText: 'No',
-    }).then(result => {
-      if (result.isConfirmed) proceed = true;
     });
-    if (!proceed) return;
+    if (!isConfirmed) return;
 
     const taskToDelete = getTaskByID(taskId);
+    const body = createFormData(taskToDelete);
+
+    try {
+      const url = 'http://localhost:3000/api/task/delete';
+      const resp = await fetch(url, {
+        method: 'POST',
+        body,
+      });
+
+      const data = await resp.json();
+      if (data.ok) {
+        Swal.fire('Eliminado!', data.message, data.type);
+
+        tasksStore = tasksStore.filter(task => task.id !== taskId);
+
+        showTasks();
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 })();

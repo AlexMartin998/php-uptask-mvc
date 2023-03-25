@@ -102,6 +102,32 @@ class TaskController
     isAuth();
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+      $resp = [];
+      $project = Project::where('id', $_POST['project_id']);
+      if (!$project || $project->owner_id !== $_SESSION['id']) {
+        $resp = [
+          'ok' => false,
+          'type' => 'error',
+          'message' => 'Se produjo un error al actualizar la tarea',
+        ];
+
+        echo json_encode($resp);
+        return;
+      }
+
+      $task = new Task($_POST);
+      $result = $task->delete();
+      if ($result) {
+        $resp = [
+          'ok' => true,
+          'type' => 'success',
+          'id' => $task->id,
+          'projectId' => $project->id,
+          'message' => 'Tarea eliminada correctamente',
+        ];
+
+        echo json_encode($resp);
+      }
     }
   }
 }
