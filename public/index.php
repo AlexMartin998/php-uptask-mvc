@@ -20,21 +20,23 @@ $router->get('/register', [AuthController::class, 'register']);
 $router->post('/register', [AuthController::class, 'register']);
 
 // password recovery
-$router->get('/forgot-password', [AuthController::class, 'forgotPassword']);
-$router->post('/forgot-password', [AuthController::class, 'forgotPassword']);
+$router->get('/forgot-password', [AuthController::class, 'forgot_password']);
+$router->post('/forgot-password', [AuthController::class, 'forgot_password']);
 
 // reset pass
-$router->get('/reset-password', [AuthController::class, 'resetPassword']);
-$router->post('/reset-password', [AuthController::class, 'resetPassword']);
+$router->get('/reset-password', [AuthController::class, 'reset_password']);
+$router->post('/reset-password', [AuthController::class, 'reset_password']);
 
 // confirm account
 $router->get('/message', [AuthController::class, 'message']);
-$router->get('/confirm-account', [AuthController::class, 'confirmAccount']);
+$router->get('/confirm-account', [AuthController::class, 'confirm_account']);
 
 
 
 // // Private - Projects
 $router->get('/dashboard', [DashboardController::class, 'index']);
+$router->get('/crear-proyecto', [DashboardController::class, 'create_project']);
+$router->get('/perfil', [DashboardController::class, 'profile']);
 
 
 
