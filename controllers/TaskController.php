@@ -54,6 +54,7 @@ class TaskController
         'ok' => true,
         'type' => 'success',
         'id' => $result['id'],
+        'projectId' => $project->id,
         'message' => 'Tarea creada correctamente.',
       ];
       echo json_encode($resp);
@@ -66,6 +67,32 @@ class TaskController
     isAuth();
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+      $resp = [];
+      $project = Project::where('id', $_POST['project_id']);
+      if (!$project || $project->owner_id !== $_SESSION['id']) {
+        $resp = [
+          'ok' => false,
+          'type' => 'error',
+          'message' => 'Se produjo un error al actualizar la tarea',
+        ];
+
+        echo json_encode($resp);
+        return;
+      }
+
+      $task = new Task($_POST);
+      $result = $task->save();
+      if ($result) {
+        $resp = [
+          'ok' => true,
+          'type' => 'success',
+          'id' => $task->id,
+          'projectId' => $project->id,
+          'message' => 'Estado de la tarea actualizado correctamente',
+        ];
+
+        echo json_encode($resp);
+      }
     }
   }
 

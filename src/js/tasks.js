@@ -1,5 +1,6 @@
 (() => {
   const addTaskBtn = document.querySelector('#add-task');
+  let tasksStore = [];
 
   addTaskBtn.addEventListener('click', () => {
     const modal = document.createElement('DIV');
@@ -69,7 +70,7 @@
     }, 2000);
   };
 
-  // crud task
+  // // crud task
   const addNewTask = async taskName => {
     const projectIdUrl = getProjectUrl();
 
@@ -91,10 +92,21 @@
         document.querySelector('.form legend')
       );
 
-      if (data.ok)
+      if (data.ok) {
+        const newTask = {
+          id: data.id,
+          name: taskName,
+          project_id: data.projectId.toString(),
+          status: 0,
+        };
+
+        tasksStore = [...tasksStore, newTask];
+        showTasks(tasksStore);
+
         return setTimeout(() => {
           document.querySelector('.modal').remove();
-        }, 2100);
+        }, 1200);
+      }
     } catch (error) {
       console.log(error);
     }
@@ -106,8 +118,10 @@
     return Object.fromEntries(params.entries());
   };
 
-  const showTasks = tasks => {
-    if (!tasks.length) {
+  const showTasks = () => {
+    clearTasksStore();
+
+    if (!tasksStore.length) {
       const ulTasks = document.querySelector('.task-list');
       const noTasksText = document.createElement('LI');
       noTasksText.textContent = 'No hay tareas';
@@ -116,58 +130,41 @@
       return ulTasks.appendChild(noTasksText);
     }
 
-    /*  tasks.forEach(task => {
-      const taskLi = document.createElement('LI');
-      taskLi.dataset.taskId = task.id;
-      taskLi.classList.add('task');
+    let taskLi = '';
+    tasksStore.forEach(task => {
+      taskLi += `
+    <li class="task" data-task-id="${task.id}">
+      <p>${task.name}</p>
+      <div class="options">
+        <button class="task-status double-click ${
+          !+task.status ? 'pending' : 'completed'
+        }" data-task-status="${task.status}">
+          ${!+task.status ? 'Pendiente' : 'Completada'}
+        </button>
+        <button class="delete-task double-click" data-task-id="${
+          task.id
+        }">Eliminar</button>
+      </div>
+    </li>`;
+    });
+    const tasksUl = document.querySelector('.task-list');
+    tasksUl.innerHTML += taskLi;
 
-      const taskName = document.createElement('P');
-      taskName.textContent = task.name;
+    const statusBtns = document.querySelectorAll('.task-status');
+    statusBtns.forEach(btn => {
+      btn.addEventListener('dblclick', async e => {
+        const taskId = e.target.parentElement.parentElement.dataset.taskId;
+        updateTaskStatus(taskId);
+      });
+    });
 
-      const optionsDiv = document.createElement('DIV');
-      optionsDiv.classList.add('options');
-
-      const btnTaskStatus = document.createElement('BUTTON');
-      btnTaskStatus.classList.add(
-        'task-status',
-        `${!+task.status ? 'pendiente' : 'completada'}`
-      );
-      btnTaskStatus.textContent = !+task.status ? 'Pendiente' : 'Completada';
-      btnTaskStatus.dataset.taskStatus = task.status;
-
-      const btnDeleteTask = document.createElement('BUTTON');
-      btnDeleteTask.classList.add('delete-task');
-      btnDeleteTask.dataset.taskId = task.id;
-      btnDeleteTask.textContent = 'Eliminar';
-
-      //
-      optionsDiv.appendChild(btnTaskStatus);
-      optionsDiv.appendChild(btnDeleteTask);
-      taskLi.appendChild(taskName);
-      taskLi.appendChild(optionsDiv);
-
-      const tasksUl = document.querySelector('.task-list');
-      tasksUl.append(taskLi);
-    }); */
-    tasks.forEach(task => {
-      const taskLi = `
-        <li class="task" data-task-id="${task.id}">
-          <p>${task.name}</p>
-          <div class="options">
-            <button class="task-status ${
-              !+task.status ? 'pending' : 'completed'
-            }" data-task-status="${task.status}">
-              ${!+task.status ? 'Pendiente' : 'Completada'}
-            </button>
-            <button class="delete-task" data-task-id="${
-              task.id
-            }">Eliminar</button>
-          </div>
-        </li>`;
-
-      const tasksUl = document.querySelector('.task-list');
-      // tasksUl.insertAdjacentHTML('beforeend', taskLi);
-      tasksUl.innerHTML += taskLi;
+    tasksUl.addEventListener('dblclick', async e => {
+      if (!e.target.classList.contains('double-click')) return;
+      const taskId = e.target.parentElement.parentElement.dataset.taskId;
+      const isDeleteBtn = e.target.classList.contains('delete-task');
+      if (isDeleteBtn) {
+        deleteTask(taskId);
+      }
     });
   };
 
@@ -175,12 +172,73 @@
     try {
       const url = `/api/tasks?id=${getProjectUrl().id}`;
       const resp = await fetch(url);
-      const tasks = await resp.json();
+      tasksStore = await resp.json();
 
-      showTasks(tasks);
+      showTasks(tasksStore);
     } catch (error) {
       console.log(error);
     }
   };
   getProjectTasks();
+
+  const clearTasksStore = () => {
+    const taskList = document.querySelector('.task-list');
+
+    while (taskList.firstChild) {
+      taskList.removeChild(taskList.firstChild);
+    }
+  };
+
+  const getTaskByID = id => {
+    return tasksStore.find(task => task.id === id);
+  };
+
+  const updateTaskStatus = async taskId => {
+    const updatedTask = getTaskByID(taskId);
+    updatedTask.status = updatedTask.status === '1' ? '0' : '1';
+    const body = new FormData();
+    Object.keys(updatedTask).forEach(key =>
+      body.append(key, updatedTask[key].trim())
+    );
+
+    try {
+      const url = 'http://localhost:3000/api/task/update';
+      const resp = await fetch(url, {
+        method: 'POST',
+        body,
+      });
+
+      const data = await resp.json();
+      if (data.ok) {
+        showAlert(
+          data.message,
+          data.type,
+          document.querySelector('.new-task-container')
+        );
+
+        tasksStore = tasksStore.map(task =>
+          task.id === taskId ? updatedTask : task
+        );
+
+        showTasks();
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const deleteTask = async taskId => {
+    let proceed;
+    Swal.fire({
+      title: '¿Eliminar Tarea?',
+      showCancelButton: true,
+      confirmButtonText: 'Si',
+      cancelButtonText: 'No',
+    }).then(result => {
+      if (result.isConfirmed) proceed = true;
+    });
+    if (!proceed) return;
+
+    const taskToDelete = getTaskByID(taskId);
+  };
 })();
