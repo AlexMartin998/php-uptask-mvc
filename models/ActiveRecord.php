@@ -80,6 +80,15 @@ class ActiveRecord
         return array_shift($result);
     }
 
+    // search for all records belonging to an ID
+    public static function belongsTo($column, $value)
+    {
+        $query = "SELECT * FROM " . static::$table . " WHERE $column = '$value'";
+        $result = self::consultarSQL($query);
+        return $result;
+    }
+
+
     // SQL para Consultas Avanzadas.
     public static function SQL($consulta)
     {
