@@ -29,7 +29,7 @@
     document.querySelector('.dashboard').appendChild(modal);
 
     // handle modal
-    modal.addEventListener('click', e => {
+    modal.addEventListener('click', async e => {
       e.preventDefault();
 
       if (e.target.classList.contains('close-modal')) {
@@ -49,7 +49,7 @@
             document.querySelector('.form legend')
           );
 
-        console.log('first');
+        await addNewTask(taskInput.value.trim());
       }
     });
 
@@ -68,9 +68,41 @@
       }, 2000);
     };
 
-    //
-    const addNewTask = async () => {
-      //
+    // crud task
+    const addNewTask = async taskName => {
+      const projectIdUrl = getProjectUrl();
+
+      // form for mvc
+      const body = new FormData();
+      body.append('name', taskName);
+      body.append('project_id', projectIdUrl.id);
+
+      try {
+        const url = 'http://localhost:3000/api/tasks';
+        const resp = await fetch(url, {
+          method: 'POST',
+          body,
+        });
+        const data = await resp.json();
+        showAlert(
+          data.message,
+          data.type,
+          document.querySelector('.form legend')
+        );
+
+        if (data.ok)
+          return setTimeout(() => {
+            document.querySelector('.modal').remove();
+          }, 2100);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    const getProjectUrl = () => {
+      const params = new URLSearchParams(window.location.search);
+
+      return Object.fromEntries(params.entries());
     };
   });
 })();
