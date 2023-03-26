@@ -96,4 +96,16 @@ class User extends ActiveRecord
 
     return self::$alerts;
   }
+
+  public function validateProfile()
+  {
+    if (!$this->name) {
+      self::$alerts['error'][] = 'El Nombre del Usuario es Obligatorio';
+    }
+    if (!$this->email) {
+      self::$alerts['error'][] = 'El Email del Usuario es Obligatorio';
+    }
+
+    return self::$alerts;
+  }
 }

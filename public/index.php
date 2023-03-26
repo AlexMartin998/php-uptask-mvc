@@ -43,6 +43,9 @@ $router->post('/crear-proyecto', [DashboardController::class, 'create_project'])
 $router->get('/proyecto', [DashboardController::class, 'project']);
 
 $router->get('/perfil', [DashboardController::class, 'profile']);
+$router->post('/perfil', [DashboardController::class, 'profile']);
+$router->get('/update-password', [DashboardController::class, 'update_password']);
+$router->post('/update-password', [DashboardController::class, 'update_password']);
 
 
 

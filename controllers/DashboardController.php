@@ -3,6 +3,7 @@
 namespace Controllers;
 
 use Model\Project;
+use Model\User;
 use MVC\Router;
 
 
@@ -72,9 +73,45 @@ class DashboardController
   {
     session_start();
     isAuth();
+    $user = User::find($_SESSION['id']);
+    $alerts = [];
 
-    $router->render('dashboard/create-project', [
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+      $user->synchronize($_POST);
+      $alerts = $user->validateProfile();
+
+      if (empty($alerts)) {
+        // check email
+        $isRegisterd = User::where('email', $user->email);
+
+        if ($isRegisterd && $isRegisterd->id !== $user->id) {
+          User::setAlert('error', 'Cuenta ya registrada.');
+        } else {
+          $user->save();
+          $_SESSION['name'] = $user->name;
+
+          User::setAlert('success', 'Cambios guardados correctamente');
+        }
+      }
+    }
+
+    $alerts = $user->getAlerts();
+
+    $router->render('dashboard/profile', [
       'title' => 'Perfil',
+      'user' => $user,
+      'alerts' => $alerts,
+    ]);
+  }
+
+  public function update_password(Router $router)
+  {
+    $alerts = [];
+
+    $router->render('dashboard/profile', [
+      'title' => 'Perfil',
+      // 'user' => $user,
+      'alerts' => $alerts,
     ]);
   }
 }
