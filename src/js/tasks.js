@@ -152,7 +152,6 @@
   const showTasks = filteredTasks => {
     clearTasksStore();
 
-    // const taskArr = filteredTasks?.length ? filteredTasks : tasksStore;
     const taskArr = isFiltered ? filteredTasks : tasksStore;
 
     if (!taskArr.length) {
@@ -255,11 +254,16 @@
 
       const data = await resp.json();
       if (data.ok) {
-        Swal.fire('Tarea actualizada!', data.message, data.type);
+        // Swal.fire('Tarea actualizada!', data.message, data.type);
 
         tasksStore = tasksStore.map(task =>
           task.id === taskId ? updatedTask : task
         );
+
+        if (isFiltered) {
+          filteredTasks = filteredTasks.filter(task => task.id !== taskId);
+          return showTasks(filteredTasks);
+        }
 
         showTasks();
       }
