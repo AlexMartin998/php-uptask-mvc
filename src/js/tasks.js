@@ -1,6 +1,9 @@
 (() => {
   const addTaskBtn = document.querySelector('#add-task');
+  const filters = document.querySelectorAll('.filters input[type="radio"]');
   let tasksStore = [];
+  let filteredTasks = [];
+  let isFiltered = false;
 
   const showFormModal = (edit = false, task = {}) => {
     const modal = document.createElement('DIV');
@@ -146,10 +149,13 @@
     return Object.fromEntries(params.entries());
   };
 
-  const showTasks = () => {
+  const showTasks = filteredTasks => {
     clearTasksStore();
 
-    if (!tasksStore.length) {
+    // const taskArr = filteredTasks?.length ? filteredTasks : tasksStore;
+    const taskArr = isFiltered ? filteredTasks : tasksStore;
+
+    if (!taskArr.length) {
       const ulTasks = document.querySelector('.task-list');
       const noTasksText = document.createElement('LI');
       noTasksText.textContent = 'No hay tareas';
@@ -159,7 +165,7 @@
     }
 
     let taskLi = '';
-    tasksStore.forEach(task => {
+    taskArr.forEach(task => {
       taskLi += `
     <li class="task" data-task-id="${task.id}">
       <p class="double-click task-name">${task.name}</p>
@@ -293,4 +299,22 @@
       console.log(error);
     }
   };
+
+  // // filters
+  const filterTask = e => {
+    const radioValue = e.target.value;
+    if (!radioValue.trim().length) {
+      isFiltered = false;
+      return showTasks();
+    }
+
+    isFiltered = true;
+    filteredTasks = tasksStore.filter(task => task.status === radioValue);
+
+    showTasks(filteredTasks);
+  };
+
+  filters.forEach(radio => {
+    radio.addEventListener('input', filterTask);
+  });
 })();
