@@ -297,6 +297,11 @@
 
         tasksStore = tasksStore.filter(task => task.id !== taskId);
 
+        if (isFiltered) {
+          filteredTasks = filteredTasks.filter(task => task.id !== taskId);
+          return showTasks(filteredTasks);
+        }
+
         showTasks();
       }
     } catch (error) {
