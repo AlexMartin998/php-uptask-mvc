@@ -88,7 +88,7 @@ class TaskController
           'type' => 'success',
           'id' => $task->id,
           'projectId' => $project->id,
-          'message' => 'Estado de la tarea actualizado correctamente',
+          'message' => 'Tarea actualizada correctamente',
         ];
 
         echo json_encode($resp);

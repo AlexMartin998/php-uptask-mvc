@@ -2,21 +2,33 @@
   const addTaskBtn = document.querySelector('#add-task');
   let tasksStore = [];
 
-  addTaskBtn.addEventListener('click', () => {
+  const showFormModal = (edit = false, task = {}) => {
     const modal = document.createElement('DIV');
-    modal.classList.add('modal');
+    modal.classList.add('modal', 'overlay');
     let form;
 
     modal.innerHTML = `
       <form class='form new-task'>
-        <legend>Agrega una nueva tarea</legend>
+        <legend>${edit ? 'Editar' : 'Agrega una nueva'} tarea</legend>
         <div class='field'>
           <label>Tarea</label>
-          <input type='text' name='task' placeholder='Agregar tarea al Proyecto Actual' id='task' />
+          <input 
+            type='text'
+            name='task' 
+            placeholder='${
+              edit
+                ? 'Edita el nombre de la Tarea'
+                : 'Agregar tarea al Proyecto Actual'
+            }'
+            id='task' 
+            value="${task.name ?? ''}"
+            />
         </div>
 
         <div class='options'>
-          <input type='submit' class='submit-new-task' value='Agregar Tarea' />
+          <input type='submit' class='submit-new-task' value='${
+            edit ? 'Editar' : 'Agregar'
+          } Tarea' />
           <button type='button' class='close-modal'>Cancelar</button>
         </div>
       </form>
@@ -33,7 +45,10 @@
     modal.addEventListener('click', async e => {
       e.preventDefault();
 
-      if (e.target.classList.contains('close-modal')) {
+      if (
+        e.target.classList.contains('close-modal') ||
+        e.target.classList.contains('overlay')
+      ) {
         form.classList.add('close');
 
         setTimeout(() => {
@@ -43,16 +58,29 @@
 
       if (e.target.classList.contains('submit-new-task')) {
         const taskInput = document.querySelector('#task');
-        if (!taskInput.value.trim().length)
+        const taskName = taskInput.value.trim();
+        if (!taskName.length)
           return showAlert(
             'El titulo es obligatorio',
             'error',
             document.querySelector('.form legend')
           );
 
-        await addNewTask(taskInput.value.trim());
+        if (edit) {
+          updateTaskStatus(task.id, taskName);
+
+          form.classList.add('close');
+
+          return modal.remove();
+        }
+
+        await saveTask(taskName);
       }
     });
+  };
+
+  addTaskBtn.addEventListener('click', () => {
+    showFormModal();
   });
 
   const showAlert = (message, type, ref) => {
@@ -71,7 +99,7 @@
   };
 
   // // crud task
-  const addNewTask = async taskName => {
+  const saveTask = async taskName => {
     const projectIdUrl = getProjectUrl();
 
     // form for mvc
@@ -134,7 +162,7 @@
     tasksStore.forEach(task => {
       taskLi += `
     <li class="task" data-task-id="${task.id}">
-      <p>${task.name}</p>
+      <p class="double-click task-name">${task.name}</p>
       <div class="options">
         <button class="task-status double-click ${
           !+task.status ? 'pending' : 'completed'
@@ -153,18 +181,25 @@
     const statusBtns = document.querySelectorAll('.task-status');
     statusBtns.forEach(btn => {
       btn.addEventListener('dblclick', async e => {
-        const taskId = e.target.parentElement.parentElement.dataset.taskId;
+        const taskId = e.target.closest('li').dataset.taskId;
         updateTaskStatus(taskId);
+      });
+    });
+    const taskName = document.querySelectorAll('.task-name');
+    taskName.forEach(btn => {
+      btn.addEventListener('dblclick', async e => {
+        const taskId = e.target.closest('li').dataset.taskId;
+        const task = getTaskByID(taskId);
+        showFormModal(true, task);
       });
     });
 
     tasksUl.addEventListener('dblclick', async e => {
       if (!e.target.classList.contains('double-click')) return;
-      const taskId = e.target.parentElement.parentElement.dataset.taskId;
+      const taskId = e.target.closest('li').dataset.taskId;
       const isDeleteBtn = e.target.classList.contains('delete-task');
-      if (isDeleteBtn) {
-        deleteTask(taskId);
-      }
+
+      if (isDeleteBtn) deleteTask(taskId);
     });
   };
 
@@ -199,9 +234,10 @@
     return formData;
   };
 
-  const updateTaskStatus = async taskId => {
+  const updateTaskStatus = async (taskId, taskName = '') => {
     const updatedTask = getTaskByID(taskId);
-    updatedTask.status = updatedTask.status === '1' ? '0' : '1';
+    if (!taskName) updatedTask.status = updatedTask.status === '1' ? '0' : '1';
+    updatedTask.name = taskName || updatedTask.name;
     const body = createFormData(updatedTask);
 
     try {
@@ -213,7 +249,7 @@
 
       const data = await resp.json();
       if (data.ok) {
-        Swal.fire('Estado actualizado!', data.message, data.type);
+        Swal.fire('Tarea actualizada!', data.message, data.type);
 
         tasksStore = tasksStore.map(task =>
           task.id === taskId ? updatedTask : task
