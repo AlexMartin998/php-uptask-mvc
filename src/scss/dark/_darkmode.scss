@@ -1,0 +1,124 @@
+@use 'base/variables' as v;
+@use 'base/mixins' as m;
+
+@media (prefers-color-scheme: dark) {
+  $darkGray: #2c2c3b;
+
+  body {
+    background-color: $darkGray;
+
+    .tagline,
+    .form label,
+    .login .actions a,
+    .create .actions a,
+    .forgot .actions a {
+      color: v.$white;
+    }
+
+    .page-description,
+    .form .field input,
+    .page-title {
+      color: darken(v.$lightGray, 15%);
+    }
+
+    .form .field input {
+      background-color: lighten($darkGray, 25%);
+      &::placeholder {
+        color: darken(v.$lightGray, 30%);
+      }
+    }
+
+    .alert.error {
+      background-color: v.$white;
+    }
+
+    .sidebar {
+      @include m.tablet {
+        background-color: darken($darkGray, 5%);
+      }
+      .sidebar-nav a {
+        &.activo,
+        &:hover {
+          background-color: v.$orange;
+        }
+      }
+    }
+
+    .navbar-mobile,
+    .navbar {
+      background-color: darken($darkGray, 7%);
+    }
+    .navbar {
+      p {
+        color: v.$orange;
+        span {
+          color: v.$lightGray;
+        }
+      }
+      .logout {
+        @include m.button(v.$orange, v.$white);
+        padding: 1rem;
+        font-size: 1.2rem;
+      }
+    }
+
+    .filters {
+      background-color: lighten($darkGray, 10%);
+      h2,
+      label {
+        color: v.$white;
+      }
+      input[type='radio'] {
+        accent-color: v.$orange;
+      }
+    }
+
+    .dashboard {
+      background-color: $darkGray;
+
+      .anchor {
+        color: v.$lightGray;
+        &:hover {
+          color: darken(v.$lightGray, 20%);
+        }
+      }
+      .form input:not([type='submit']) {
+        background-color: lighten($darkGray, 20%);
+        color: v.$white;
+        &::placeholder {
+          color: darken(v.$lightGray, 30%);
+        }
+      }
+    }
+
+    .project-list .project {
+      background-color: lighten($darkGray, 20%);
+      &:hover {
+        background-color: lighten($darkGray, 15%);
+      }
+    }
+    .task-list .task {
+      background-color: lighten($darkGray, 10%);
+      border: none;
+      p {
+        color: v.$lightGray;
+      }
+    }
+
+    .modal .form {
+      background-color: $darkGray;
+      input[type='text'] {
+        background-color: lighten($darkGray, 20%);
+        border: none;
+        color: v.$white;
+        &::placeholder {
+          color: darken(v.$lightGray, 20%);
+        }
+      }
+
+      legend {
+        color: v.$lightGray;
+      }
+    }
+  }
+}
