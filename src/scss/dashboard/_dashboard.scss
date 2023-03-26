@@ -36,4 +36,12 @@
       font-size: 1.4rem;
     }
   }
+
+  .anchor {
+    color: v.$indigo;
+
+    &:hover {
+      color: darken(v.$indigo, 20%);
+    }
+  }
 }

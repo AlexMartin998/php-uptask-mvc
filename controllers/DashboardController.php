@@ -104,13 +104,39 @@ class DashboardController
     ]);
   }
 
-  public function update_password(Router $router)
+  public static function update_password(Router $router)
   {
+    session_start();
+    isAuth();
+    $user = User::find($_SESSION['id']);
     $alerts = [];
 
-    $router->render('dashboard/profile', [
-      'title' => 'Perfil',
-      // 'user' => $user,
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+      $user->synchronize($_POST);
+      $alerts = $user->newPassValidations();
+
+      if (empty($alerts)) {
+        $result = $user->checkNewPassword();
+        if ($result) {
+          $user->password = $user->new_password;
+          unset($user->password2, $user->new_password);
+
+          $user->hashPassword();
+          $saveResult = $user->save();
+
+          if ($saveResult) {
+            User::setAlert('success', 'Password Actualizado Correctamente');
+          }
+        } else {
+          User::setAlert('error', 'Password Incorrecto');
+        }
+      }
+    }
+
+    $alerts = $user->getAlerts();
+
+    $router->render('dashboard/update-password', [
+      'title' => 'Cambiar Password',
       'alerts' => $alerts,
     ]);
   }
