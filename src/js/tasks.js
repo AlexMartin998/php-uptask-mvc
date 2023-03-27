@@ -4,6 +4,7 @@
   let tasksStore = [];
   let filteredTasks = [];
   let isFiltered = false;
+  let isPending = false;
 
   const showFormModal = (edit = false, task = {}) => {
     const modal = document.createElement('DIV');
@@ -122,6 +123,7 @@
         data.type,
         document.querySelector('.form legend')
       );
+
       if (data.ok) {
         const newTask = {
           id: data.id,
@@ -131,14 +133,23 @@
         };
 
         tasksStore = [...tasksStore, newTask];
-        showTasks(tasksStore);
 
-        return setTimeout(() => {
-          document.querySelector('.modal').remove();
-        }, 1200);
+        if (isFiltered) {
+          if (isPending) {
+            filteredTasks = [...filteredTasks, newTask];
+            return showTasks(filteredTasks);
+          }
+          return showTasks(filteredTasks);
+        }
+
+        showTasks(tasksStore);
       }
     } catch (error) {
       console.log(error);
+    } finally {
+      return setTimeout(() => {
+        document.querySelector('.modal').remove();
+      }, 1200);
     }
   };
 
@@ -260,10 +271,7 @@
           task.id === taskId ? updatedTask : task
         );
 
-        if (isFiltered) {
-          filteredTasks = filteredTasks.filter(task => task.id !== taskId);
-          return showTasks(filteredTasks);
-        }
+        if (isFiltered) return updateFilteredTasks(taskId);
 
         showTasks();
       }
@@ -297,10 +305,7 @@
 
         tasksStore = tasksStore.filter(task => +task.id !== +taskId);
 
-        if (isFiltered) {
-          filteredTasks = filteredTasks.filter(task => +task.id !== +taskId);
-          return showTasks(filteredTasks);
-        }
+        if (isFiltered) return updateFilteredTasks(taskId);
 
         showTasks();
       }
@@ -316,8 +321,11 @@
       isFiltered = false;
       return showTasks();
     }
+    if (+radioValue === 0) isPending = true;
+    else isPending = false;
 
     isFiltered = true;
+
     filteredTasks = tasksStore.filter(task => +task.status === +radioValue);
 
     showTasks(filteredTasks);
@@ -326,4 +334,9 @@
   filters.forEach(radio => {
     radio.addEventListener('input', filterTask);
   });
+
+  const updateFilteredTasks = taskId => {
+    filteredTasks = filteredTasks.filter(task => +task.id !== +taskId);
+    showTasks(filteredTasks);
+  };
 })();
