@@ -36,8 +36,9 @@
 
 
 <?php
+  // <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 $script .= '
-  <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="build/js/swal.js"></script>
   <script src="build/js/tasks.js"></script>
 ';
 ?>

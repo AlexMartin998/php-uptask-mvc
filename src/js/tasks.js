@@ -122,12 +122,11 @@
         data.type,
         document.querySelector('.form legend')
       );
-
       if (data.ok) {
         const newTask = {
           id: data.id,
           name: taskName,
-          project_id: data.projectId.toString(),
+          project_id: data.projectId,
           status: 0,
         };
 
@@ -229,12 +228,13 @@
     }
   };
 
-  const getTaskByID = id => {
-    return tasksStore.find(task => task.id === id);
-  };
+  const getTaskByID = id => tasksStore.find(task => +task.id === +id);
+
   const createFormData = obj => {
     const formData = new FormData();
-    Object.keys(obj).forEach(key => formData.append(key, obj[key].trim()));
+    Object.keys(obj).forEach(key =>
+      formData.append(key, obj[key].toString().trim())
+    );
 
     return formData;
   };
@@ -295,10 +295,10 @@
       if (data.ok) {
         Swal.fire('Eliminado!', data.message, data.type);
 
-        tasksStore = tasksStore.filter(task => task.id !== taskId);
+        tasksStore = tasksStore.filter(task => +task.id !== +taskId);
 
         if (isFiltered) {
-          filteredTasks = filteredTasks.filter(task => task.id !== taskId);
+          filteredTasks = filteredTasks.filter(task => +task.id !== +taskId);
           return showTasks(filteredTasks);
         }
 
@@ -318,7 +318,7 @@
     }
 
     isFiltered = true;
-    filteredTasks = tasksStore.filter(task => task.status === radioValue);
+    filteredTasks = tasksStore.filter(task => +task.status === +radioValue);
 
     showTasks(filteredTasks);
   };
