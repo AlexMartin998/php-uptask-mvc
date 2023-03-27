@@ -28,3 +28,9 @@ composer install
 php -S localhost:3000
 
 ```
+
+```bash
+# HTTP Get request
+
+curl http://localhost:3000/api/dev/u-seed
+```

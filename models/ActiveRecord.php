@@ -211,4 +211,81 @@ class ActiveRecord
             }
         }
     }
+
+
+
+    // // // // seed      <<---    DEV
+    public static function createTable($table)
+    {
+        $query = "";
+
+        switch ($table) {
+            case 'user':
+                $query = "CREATE TABLE IF NOT EXISTS " . static::$table . " (
+                    id INT(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+                    name VARCHAR(30) NOT NULL,
+                    email VARCHAR(30) NOT NULL UNIQUE,
+                    password VARCHAR(90) NOT NULL,
+                    token VARCHAR(60),
+                    confirmed TINYINT(1) NOT NULL DEFAULT 0
+                )";
+                break;
+            case 'project':
+                $query = "CREATE TABLE IF NOT EXISTS " . static::$table . " (
+                    id INT(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+                    title VARCHAR(30) NOT NULL,
+                    url VARCHAR(45) NOT NULL,
+                    owner_id INT(11) UNSIGNED,
+                    FOREIGN KEY (owner_id) REFERENCES users(id)
+                )";
+                break;
+            case 'task':
+                $query = "CREATE TABLE IF NOT EXISTS " . static::$table . " (
+                    id INT(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+                    name VARCHAR(30) NOT NULL,
+                    status TINYINT(1) NOT NULL DEFAULT 0,
+                    project_id INT(11) UNSIGNED,
+                    FOREIGN KEY (project_id) REFERENCES projects(id)
+                )";
+                break;
+            default:
+                break;
+        }
+
+        return self::$db->query($query);
+    }
+
+    public static function deleteTable()
+    {
+        $query = "DROP TABLE IF EXISTS " . static::$table;
+        return self::$db->query($query);
+    }
+
+    public static function insertMany($usuarios)
+    {
+        // Sanitizar los datos
+        $atributos = array_map(function ($usuario) {
+            return $usuario->sanitizarAtributos();
+        }, $usuarios);
+
+        // Crear los placeholders de los valores
+        $placeholders = join(', ', array_fill(0, count($usuarios), '(' . join(', ', array_fill(0, count($atributos[0]), '?')) . ')'));
+
+        // Obtener los valores
+        $values = array_reduce($atributos, function ($acc, $atributo) {
+            return array_merge($acc, array_values($atributo));
+        }, []);
+
+        // Crear la consulta
+        $query = "INSERT INTO " . static::$table . " ( " . join(', ', array_keys($atributos[0])) . " ) VALUES " . $placeholders;
+
+        // Ejecutar la consulta
+        $stmt = self::$db->prepare($query);
+        $result = $stmt->execute($values);
+
+        return [
+            'resultado' => $result,
+            'ids' => range(self::$db->insert_id - count($usuarios) + 1, self::$db->insert_id),
+        ];
+    }
 }

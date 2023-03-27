@@ -4,6 +4,7 @@ require_once __DIR__ . '/../includes/app.php';
 
 use Controllers\AuthController;
 use Controllers\DashboardController;
+use Controllers\SeedController;
 use Controllers\TaskController;
 use MVC\Router;
 
@@ -55,6 +56,9 @@ $router->post('/api/tasks', [TaskController::class, 'create_task']);
 $router->post('/api/task/update', [TaskController::class, 'update_task']);
 $router->post('/api/task/delete', [TaskController::class, 'delete_task']);
 
+
+// only for the development environment
+$router->get('/api/dev/u-seed', [SeedController::class, 'index']);
 
 
 
